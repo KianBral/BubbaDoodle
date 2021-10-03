@@ -9,14 +9,14 @@ from PIL import ImageTk,Image
 class Color_Button(Button):#Inherited custom made color button , with default command to change colour of pen
     def __init__(self,color):
         self.color=color
-        super().__init__(bg=color,relief=RIDGE,width=2,height=1,bd=2,command=self.on_click)
+        super().__init__(bg=color,relief=GROOVE,width=8,height=1,bd=2,command=self.on_click)
     def on_click(self):
         program.color_fg=self.color
 
 class main:
     def __init__(self, master):
         self.root = master
-        self.root.title("PAINT")
+        self.root.title("BubbaDoodle!")
         screen_width = root.winfo_screenwidth()
         screen_height = root.winfo_screenheight()
         self.root.geometry(f"{screen_width-int(screen_width*0.3)}x{screen_height-int(screen_height*0.3)}")
@@ -28,30 +28,31 @@ class main:
 
 
         # making colour buttons
-        colors = ['#F8F8FF', '#cc1701','#0bd3d3','#a845b5', '#f1c232' , '#FF00FF']
+        # white, red, grey, purple, yellow, pink
+        colors = ['white', 'black', '#a8a8a7', 'red','#a845b5', '#FF00FF']
         i=5;j=5#For Location
         for color in colors:
             Color_Button(color).place(x=i,y=j)#Refer class Color_Button
             j+=30
-        colors = [ 'black', '#ffa500','red' ,'#009888', 'blue','#2bdf94']
-        i=35;j=5
-        for color in colors:
-            Color_Button(color).place(x=i,y=j)
-            j+=30
+        # colors = [ 'black', '#ffa500']
+        # i=35;j=5
+        # for color in colors:
+            # Color_Button(color).place(x=i,y=j)
+            # j+=30
 
         # making other buttons and placing them in appropriate place
-        self.Pallet_For_Foreground = Button(self.root, text='PALLET', font=('calibri', 10), bd=3, bg='white', command=self.choose_color,width=8, relief=RIDGE)
-        self.Pallet_For_Foreground.place(x=0,y=185)
+        self.Pallet_For_Foreground = Button(self.root, text='PALLETTE', font=('calibri', 10), bd=2, bg='white', command=self.choose_color,width=8, relief=RIDGE)
+        self.Pallet_For_Foreground.place(x=5,y=185)
 
 
-        self.erazer_button = Button(self.root, text='ERAZE', font=('calibri', 10), bd=3, bg='white', command=self.eraze,width=8, relief=RIDGE)
-        self.erazer_button.place(x=0, y=215)
+        self.erazer_button = Button(self.root, text='ERASE', font=('calibri', 10), bd=2, bg='white', command=self.eraze,width=8, relief=RIDGE)
+        self.erazer_button.place(x=5, y=215)
 
-        self.clear_button = Button(self.root, text='CLEAR', bd=3, bg='white', command=self.clear, width=8, relief=RIDGE)
-        self.clear_button.place(x=0, y=245)
+        self.clear_button = Button(self.root, text='CLEAR', bd=2, bg='white', command=self.clear, width=8, relief=RIDGE)
+        self.clear_button.place(x=5, y=245)
 
-        self.save_button = Button(self.root, text='SAVE', bd=3, bg='white', command=self.save, width=8, relief=RIDGE)
-        self.save_button.place(x=0, y=275)
+        self.save_button = Button(self.root, text='SAVE', bd=2, bg='white', command=self.save, width=8, relief=RIDGE)
+        self.save_button.place(x=5, y=275)
 
         self.Brush_Text = Label(self.root, text='BRUSH', bd=0, bg='white', font=('calibri', 11))
         self.Brush_Text.place(x=1, y=310)
@@ -61,28 +62,28 @@ class main:
         self.options = StringVar(self.root)
         self.options.set('3')#Default option
         self.size_chooser = OptionMenu(self.root, self.options, *( str(x) for x in range(10)))
-        self.size_chooser.place(x=0, y=330)
+        self.size_chooser.place(x=5, y=330)
 
 
-        self.change_canvas_button=Button(self.root,text='CANVAS',font=('calibri', 10), bd=3,width=8, bg='white',command=self.change_canvas, relief=RIDGE)
-        self.change_canvas_button.place(x=0, y=370)
+        self.change_canvas_button=Button(self.root,text='CANVAS',font=('calibri', 10), bd=2,width=8, bg='white',command=self.change_canvas, relief=RIDGE)
+        self.change_canvas_button.place(x=5, y=370)
 
-        self.graph_button =Button(self.root,text='GRAPH',font=('calibri', 10), bd=3,width=8, bg='white',command=self.graph, relief=RIDGE)
-        self.graph_button.place(x=0, y=400)
+        # self.graph_button =Button(self.root,text='GRAPH',font=('calibri', 10), bd=2,width=8, bg='white',command=self.graph, relief=RIDGE)
+        # self.graph_button.place(x=5, y=400)
 
-        self.undo_button = Button(self.root, text='UNDO', font=('calibri', 10), bd=3,width=8, bg='white',command=self.undo_exec, relief=RIDGE)
-        self.undo_button.place(x=0, y=430)
+        self.undo_button = Button(self.root, text='UNDO', font=('calibri', 10), bd=2,width=8, bg='white',command=self.undo_exec, relief=RIDGE)
+        self.undo_button.place(x=5, y=400)
 
-        self.open_button=Button(self.root,text="OPEN" ,font=('calibri', 10), bd=3,width=8, bg='white',command=self.open, relief=RIDGE)
-        self.open_button.place(x=0, y=460)
+        self.open_button=Button(self.root,text="OPEN" ,font=('calibri', 10), bd=2,width=8, bg='white',command=self.open, relief=RIDGE)
+        self.open_button.place(x=5, y=430)
 
 
-        self.Background_Button = Button(self.root, text='BG COLOR', font=('calibri', 10),bd=3, bg='white', command=self.change_bg, width=8, relief=RIDGE)
-        self.Background_Button.place(x=0, y=490)
+        self.Background_Button = Button(self.root, text='BG COLOR', font=('calibri', 10),bd=2, bg='white', command=self.change_bg, width=8, relief=RIDGE)
+        self.Background_Button.place(x=5, y=460)
 
         # making the canvas and making it recognise movements of the mouse
 
-        self.canvas = Canvas(self.root, bg='white', bd=3, relief=GROOVE, height=(screen_height-int(screen_height*0.33)), width=(screen_width-int(screen_width*0.37)))
+        self.canvas = Canvas(self.root, bg='white', bd=2, relief=GROOVE, height=(screen_height-int(screen_height*0.33)), width=(screen_width-int(screen_width*0.37)))
         self.canvas.place(x=75, y=3)
 
         self.old_x = None
@@ -230,5 +231,5 @@ if __name__ == '__main__':
     #For Activating
     root = Tk()
     program=main(root)
-    root.title('Paint')
+    root.title('BubbaDoodle!')
     root.mainloop()

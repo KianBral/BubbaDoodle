@@ -12,6 +12,7 @@ class Color_Button(Button):#Inherited custom made color button , with default co
         super().__init__(bg=color,relief=GROOVE,width=8,height=1,bd=2,command=self.on_click)
     def on_click(self):
         program.color_fg=self.color
+        main.color_fg = self.color
 
 class main:
     def __init__(self, master):
@@ -61,7 +62,7 @@ class main:
 
         self.options = StringVar(self.root)
         self.options.set('3')#Default option
-        self.size_chooser = OptionMenu(self.root, self.options, *( str(x) for x in range(10)))
+        self.size_chooser = OptionMenu(self.root, self.options, *( str(x) for x in range(21)))
         self.size_chooser.place(x=5, y=330)
 
 
@@ -82,8 +83,8 @@ class main:
         self.Background_Button.place(x=5, y=460)
 
         # making the canvas and making it recognise movements of the mouse
-
-        self.canvas = Canvas(self.root, bg='white', bd=2, relief=GROOVE, height=(screen_height-int(screen_height*0.33)), width=(screen_width-int(screen_width*0.37)))
+        #  + str(self.color_fg)
+        self.canvas = Canvas(self.root, cursor="dot white yellow", bg='white', bd=2, relief=GROOVE, height=(screen_height-int(screen_height*0.33)), width=(screen_width-int(screen_width*0.37)))
         self.canvas.place(x=75, y=3)
 
         self.old_x = None
@@ -131,7 +132,7 @@ class main:
         self.undo.write(f"self.color_fg='{self.color_fg}'\n")
         self.undo.write(f"self.options.set({self.options.get()})\n")
         self.color_fg = 'white'
-        self.options.set('20')
+        # self.options.set('20')
 
     def undo_exec(self):
         self.undo.close()

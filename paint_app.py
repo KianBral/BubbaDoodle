@@ -13,11 +13,13 @@ class Color_Button(Button):#Inherited custom made color button , with default co
     def on_click(self):
         program.color_fg=self.color
         main.color_fg = self.color
+        # main.canvas.config(cursor="dot "+self.color)
 
 class main:
     def __init__(self, master):
         self.root = master
         self.root.title("BubbaDoodle!")
+        root.state('zoomed')
         self.screen_width = root.winfo_screenwidth()
         self.screen_height = root.winfo_screenheight()
         self.root.geometry(f"{self.screen_width-int(self.screen_width*0.3)}x{self.screen_height-int(self.screen_height*0.3)}")
@@ -84,7 +86,7 @@ class main:
 
         # making the canvas and making it recognise movements of the mouse
         #  + str(self.color_fg)
-        self.canvas = Canvas(self.root, cursor="dot", bg='white', bd=2, relief=GROOVE, height=(self.screen_height-int(self.screen_height*0.33)), width=(self.screen_width-int(self.screen_width*0.37)))
+        self.canvas = Canvas(self.root, cursor="dot", bg='white', bd=2, relief=GROOVE, height=(self.screen_height-int(self.screen_height*0.1)), width=(self.screen_width-int(self.screen_width*0.1)))
         self.canvas.place(x=75, y=3)
 
         self.old_x = None

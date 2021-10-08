@@ -18,9 +18,9 @@ class main:
     def __init__(self, master):
         self.root = master
         self.root.title("BubbaDoodle!")
-        screen_width = root.winfo_screenwidth()
-        screen_height = root.winfo_screenheight()
-        self.root.geometry(f"{screen_width-int(screen_width*0.3)}x{screen_height-int(screen_height*0.3)}")
+        self.screen_width = root.winfo_screenwidth()
+        self.screen_height = root.winfo_screenheight()
+        self.root.geometry(f"{self.screen_width-int(self.screen_width*0.3)}x{self.screen_height-int(self.screen_height*0.3)}")
         self.color_fg = 'black'  # Colour of pen
         self.color_bg = 'white'  # Background colour
         self.root.configure(background='white')
@@ -66,25 +66,25 @@ class main:
         self.size_chooser.place(x=5, y=330)
 
 
-        self.change_canvas_button=Button(self.root,text='CANVAS',font=('calibri', 10), bd=2,width=8, bg='white',command=self.change_canvas, relief=RIDGE)
-        self.change_canvas_button.place(x=5, y=370)
+        # self.change_canvas_button=Button(self.root,text='CANVAS',font=('calibri', 10), bd=2,width=8, bg='white',command=self.change_canvas, relief=RIDGE)
+        # self.change_canvas_button.place(x=5, y=370)
 
         # self.graph_button =Button(self.root,text='GRAPH',font=('calibri', 10), bd=2,width=8, bg='white',command=self.graph, relief=RIDGE)
         # self.graph_button.place(x=5, y=400)
 
         self.undo_button = Button(self.root, text='UNDO', font=('calibri', 10), bd=2,width=8, bg='white',command=self.undo_exec, relief=RIDGE)
-        self.undo_button.place(x=5, y=400)
+        self.undo_button.place(x=5, y=370)
 
         self.open_button=Button(self.root,text="OPEN" ,font=('calibri', 10), bd=2,width=8, bg='white',command=self.open, relief=RIDGE)
-        self.open_button.place(x=5, y=430)
+        self.open_button.place(x=5, y=400)
 
 
         self.Background_Button = Button(self.root, text='BG COLOR', font=('calibri', 10),bd=2, bg='white', command=self.change_bg, width=8, relief=RIDGE)
-        self.Background_Button.place(x=5, y=460)
+        self.Background_Button.place(x=5, y=430)
 
         # making the canvas and making it recognise movements of the mouse
         #  + str(self.color_fg)
-        self.canvas = Canvas(self.root, cursor="dot white yellow", bg='white', bd=2, relief=GROOVE, height=(screen_height-int(screen_height*0.33)), width=(screen_width-int(screen_width*0.37)))
+        self.canvas = Canvas(self.root, cursor="dot", bg='white', bd=2, relief=GROOVE, height=(self.screen_height-int(self.screen_height*0.33)), width=(self.screen_width-int(self.screen_width*0.37)))
         self.canvas.place(x=75, y=3)
 
         self.old_x = None
@@ -207,13 +207,13 @@ class main:
         color_code = colorchooser.askcolor(title="Choose Color")
         self.canvas['bg'] = color_code[1]
 
-    def change_canvas(self):
-        if self.root.winfo_width() != 1366:
-            self.canvas['width'] = root.winfo_screenwidth()-int(root.winfo_screenwidth()*0.37)
-            self.canvas['height']=root.winfo_screenheight()-int(root.winfo_screenheight()*0.33)
-        else:
-            self.canvas['height']=self.root.winfo_height()-20
-            self.canvas['width']=self.root.winfo_width()-100
+    # def change_canvas(self):
+    #     if self.root.winfo_width() != 1366:
+    #         self.canvas['width'] = root.winfo_screenwidth()-int(root.winfo_screenwidth()*0.37)
+    #         self.canvas['height']=root.winfo_screenheight()-int(root.winfo_screenheight()*0.33)
+    #     else:
+    #         self.canvas['height']=self.root.winfo_height()-20
+    #         self.canvas['width']=self.root.winfo_width()-100
 
     def graph(self):
         try:

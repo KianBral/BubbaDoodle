@@ -1,1 +1,0 @@
-pyinstaller -w -F --icon .\icon.ico --clean -n BubbaDoodle .\paint_app.py

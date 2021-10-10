@@ -19,9 +19,9 @@ class main:
     def __init__(self, master):
         self.root = master
         self.root.title("BubbaDoodle!")
-        root.state('zoomed')
-        self.screen_width = root.winfo_screenwidth()
-        self.screen_height = root.winfo_screenheight()
+        self.root.state('zoomed')
+        self.screen_width = self.root.winfo_screenwidth()
+        self.screen_height = self.root.winfo_screenheight()
         self.root.geometry(f"{self.screen_width-int(self.screen_width*0.3)}x{self.screen_height-int(self.screen_height*0.3)}")
         self.color_fg = 'black'  # Colour of pen
         self.color_bg = 'white'  # Background colour
@@ -231,8 +231,27 @@ class main:
             messagebox.showwarning("That isn't working")
 
 if __name__ == '__main__':
-    #For Activating
-    root = Tk()
-    program=main(root)
-    root.title('BubbaDoodle!')
-    root.mainloop()
+
+    #Splash Screen
+    splash_root = Tk()
+    splash_root.title('Bubba Doodle!')
+
+    screen_width = splash_root.winfo_screenwidth()
+    screen_height = splash_root.winfo_screenheight()
+    splash_root.geometry(f"{screen_width-int(screen_width*0.3)}x{screen_height-int(screen_height*0.3)}")
+
+    splash_img = ImageTk.PhotoImage(Image.open("Logo.jpg").resize((screen_width-int(screen_width*0.3), screen_height-int(screen_height*0.3))))
+    splash_label = Label(splash_root, image=splash_img)
+    splash_label.pack()
+
+    def canvas():
+        splash_root.destroy()
+
+        root = Tk()
+        root.title('BubbaDoodle!')
+        program=main(root)
+
+        root.mainloop()
+
+    splash_label.after(2000, canvas)
+    splash_root.mainloop()

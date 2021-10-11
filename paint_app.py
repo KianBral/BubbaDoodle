@@ -9,7 +9,15 @@ from PIL import ImageTk,Image
 class Color_Button(Button):#Inherited custom made color button , with default command to change colour of pen
     def __init__(self,color):
         self.color=color
-        super().__init__(bg=color,relief=GROOVE,width=8,height=1,bd=2,command=self.on_click)
+        super().__init__(
+            borderwidth=0,
+            highlightthickness=0,
+            relief="flat",
+            bg=color,
+            width=10,
+            height=5,
+            command=self.on_click
+        )
     def on_click(self):
         program.color_fg=self.color
         main.color_fg = self.color
@@ -20,53 +28,61 @@ class main:
         self.root = master
         self.root.title("BubbaDoodle!")
         self.root.state('zoomed')
+
         self.screen_width = self.root.winfo_screenwidth()
         self.screen_height = self.root.winfo_screenheight()
         self.root.geometry(f"{self.screen_width-int(self.screen_width*0.3)}x{self.screen_height-int(self.screen_height*0.3)}")
+
+
         self.color_fg = 'black'  # Colour of pen
         self.color_bg = 'white'  # Background colour
         self.root.configure(background='white')
 
         self.undo = open('undo.rec', 'w')
 
+        # making the canvas and making it recognise movements of the mouse
+        # Place the canvas as filling the entire screen
+        #  + str(self.color_fg)
+        self.canvas = Canvas(self.root, cursor="dot", bg='white', relief="flat", height=self.screen_height, width=self.screen_width)
+        self.canvas.place(x=0, y=0)
+
+        self.old_x = None
+        self.old_y = None
+        self.penwidth = 3
+        self.tag = 0
+        self.canvas.bind('<B1-Motion>', self.paint)  # drawing  line
+        self.canvas.bind('<ButtonRelease-1>', self.reset)
 
         # making colour buttons
-        # white, red, grey, purple, yellow, pink
-        colors = ['white', 'black', '#a8a8a7', 'red','#a845b5', '#FF00FF']
-        i=5;j=5#For Location
+        colors = ['#a7d9fe', '#7f7f7f', 'black', '#ff3e49']
+        i=1179;j=149
         for color in colors:
             Color_Button(color).place(x=i,y=j)#Refer class Color_Button
-            j+=30
-        # colors = [ 'black', '#ffa500']
-        # i=35;j=5
-        # for color in colors:
-            # Color_Button(color).place(x=i,y=j)
-            # j+=30
-
-        # making other buttons and placing them in appropriate place
-        self.Pallet_For_Foreground = Button(self.root, text='PALLETTE', font=('calibri', 10), bd=2, bg='white', command=self.choose_color,width=8, relief=RIDGE)
-        self.Pallet_For_Foreground.place(x=5,y=185)
-
-
-        self.erazer_button = Button(self.root, text='ERASE', font=('calibri', 10), bd=2, bg='white', command=self.eraze,width=8, relief=RIDGE)
-        self.erazer_button.place(x=5, y=215)
-
-        self.clear_button = Button(self.root, text='CLEAR', bd=2, bg='white', command=self.clear, width=8, relief=RIDGE)
-        self.clear_button.place(x=5, y=245)
-
-        self.save_button = Button(self.root, text='SAVE', bd=2, bg='white', command=self.save, width=8, relief=RIDGE)
-        self.save_button.place(x=5, y=275)
-
+            j+=94
+        
+        # Brush + brushsize 
         self.Brush_Text = Label(self.root, text='BRUSH', bd=0, bg='white', font=('calibri', 11))
-        self.Brush_Text.place(x=1, y=310)
-
-
+        self.Brush_Text.place(x=1179, y=525)
 
         self.options = StringVar(self.root)
         self.options.set('3')#Default option
         self.size_chooser = OptionMenu(self.root, self.options, *( str(x) for x in range(21)))
-        self.size_chooser.place(x=5, y=330)
+        self.size_chooser.place(x=1179, y=545)
 
+        # Eraser 
+        self.erazer_button = Button(self.root, text='ERASE', font=('calibri', 10), bd=2, bg='white', command=self.eraze,width=8, relief=RIDGE)
+        self.erazer_button.place(x=1179, y=585)
+
+
+        # Buttons on top left, from top to bottom
+        self.Pallet_For_Foreground = Button(self.root, text='PALETTE', font=('calibri', 10), bd=2, bg='white', command=self.choose_color,width=8, relief=RIDGE)
+        self.Pallet_For_Foreground.place(x=5,y=5)
+
+        self.clear_button = Button(self.root, text='CLEAR', bd=2, bg='white', command=self.clear, width=8, relief=RIDGE)
+        self.clear_button.place(x=5, y=35)
+
+        self.save_button = Button(self.root, text='SAVE', bd=2, bg='white', command=self.save, width=8, relief=RIDGE)
+        self.save_button.place(x=5, y=65)
 
         # self.change_canvas_button=Button(self.root,text='CANVAS',font=('calibri', 10), bd=2,width=8, bg='white',command=self.change_canvas, relief=RIDGE)
         # self.change_canvas_button.place(x=5, y=370)
@@ -75,26 +91,13 @@ class main:
         # self.graph_button.place(x=5, y=400)
 
         self.undo_button = Button(self.root, text='UNDO', font=('calibri', 10), bd=2,width=8, bg='white',command=self.undo_exec, relief=RIDGE)
-        self.undo_button.place(x=5, y=370)
+        self.undo_button.place(x=5, y=90)
 
         self.open_button=Button(self.root,text="OPEN" ,font=('calibri', 10), bd=2,width=8, bg='white',command=self.open, relief=RIDGE)
-        self.open_button.place(x=5, y=400)
-
+        self.open_button.place(x=5, y=120)
 
         self.Background_Button = Button(self.root, text='BG COLOR', font=('calibri', 10),bd=2, bg='white', command=self.change_bg, width=8, relief=RIDGE)
-        self.Background_Button.place(x=5, y=430)
-
-        # making the canvas and making it recognise movements of the mouse
-        #  + str(self.color_fg)
-        self.canvas = Canvas(self.root, cursor="dot", bg='white', bd=2, relief=GROOVE, height=(self.screen_height-int(self.screen_height*0.1)), width=(self.screen_width-int(self.screen_width*0.1)))
-        self.canvas.place(x=75, y=3)
-
-        self.old_x = None
-        self.old_y = None
-        self.penwidth = 3
-        self.tag = 0
-        self.canvas.bind('<B1-Motion>', self.paint)  # drawing  line
-        self.canvas.bind('<ButtonRelease-1>', self.reset)
+        self.Background_Button.place(x=5, y=150)
 
 
     # All functions are defined below
@@ -249,6 +252,7 @@ if __name__ == '__main__':
 
         root = Tk()
         root.title('BubbaDoodle!')
+        global program
         program=main(root)
 
         root.mainloop()

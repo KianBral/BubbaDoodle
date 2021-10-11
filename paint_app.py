@@ -240,7 +240,7 @@ if __name__ == '__main__':
     screen_height = splash_root.winfo_screenheight()
     splash_root.geometry(f"{screen_width-int(screen_width*0.3)}x{screen_height-int(screen_height*0.3)}")
 
-    splash_img = ImageTk.PhotoImage(Image.open("Logo.jpg").resize((screen_width-int(screen_width*0.3), screen_height-int(screen_height*0.3))))
+    splash_img = ImageTk.PhotoImage(Image.open("bubbdoob_splash.jpg").resize((screen_width-int(screen_width*0.3), screen_height-int(screen_height*0.3))))
     splash_label = Label(splash_root, image=splash_img)
     splash_label.pack()
 

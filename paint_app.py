@@ -34,16 +34,16 @@ class main:
         self.root.geometry(f"{self.screen_width-int(self.screen_width*0.3)}x{self.screen_height-int(self.screen_height*0.3)}")
 
 
-        self.color_fg = 'black'  # Colour of pen
-        self.color_bg = 'white'  # Background colour
-        self.root.configure(background='white')
+        self.color_fg = 'white'  # Colour of pen
+        self.color_bg = '#282828'  # Background colour
+        self.root.configure(background='#282828')
 
         self.undo = open('undo.rec', 'w')
 
         # making the canvas and making it recognise movements of the mouse
         # Place the canvas as filling the entire screen
         #  + str(self.color_fg)
-        self.canvas = Canvas(self.root, cursor="dot", bg='white', relief="flat", height=self.screen_height, width=self.screen_width)
+        self.canvas = Canvas(self.root, cursor="dot", bg='#282828', relief="flat", height=self.screen_height, width=self.screen_width)
         self.canvas.place(x=0, y=0)
 
         self.old_x = None
@@ -54,7 +54,7 @@ class main:
         self.canvas.bind('<ButtonRelease-1>', self.reset)
 
         # making colour buttons
-        colors = ['#a7d9fe', '#7f7f7f', 'black', '#ff3e49']
+        colors = ['#a7d9fe', '#7f7f7f', 'white', '#ff3e49']
         i=1179;j=149
         for color in colors:
             Color_Button(color).place(x=i,y=j)#Refer class Color_Button

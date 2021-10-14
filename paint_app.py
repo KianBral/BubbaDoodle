@@ -70,8 +70,8 @@ class main:
         self.size_chooser.place(x=1179, y=545)
 
         # Eraser 
-        self.erazer_button = Button(self.root, text='ERASE', font=('calibri', 10), bd=2, bg='white', command=self.eraze,width=8, relief=RIDGE)
-        self.erazer_button.place(x=1179, y=585)
+        self.eraser_button = Button(self.root, text='ERASE', font=('calibri', 10), bd=2, bg='white', command=self.erase,width=8, relief=RIDGE)
+        self.eraser_button.place(x=1179, y=585)
 
 
         # Buttons on top left, from top to bottom
@@ -132,11 +132,11 @@ class main:
         '''clears the canvas'''
         self.canvas.delete(ALL)
 
-    def eraze(self):
-        '''erazing stuff simply by changing colour of the brush to white'''
+    def erase(self):
+        '''erasing stuff simply by changing colour of the brush to white'''
         self.undo.write(f"self.color_fg='{self.color_fg}'\n")
         self.undo.write(f"self.options.set({self.options.get()})\n")
-        self.color_fg = 'white'
+        self.color_fg = self.canvas['bg']
         # self.options.set('20')
 
     def undo_exec(self):
@@ -210,6 +210,12 @@ class main:
     def change_bg(self):
         self.undo.write(f"self.canvas['bg']='{self.color_bg}'\n")
         color_code = colorchooser.askcolor(title="Choose Color")
+        self.clear()
+
+        # if the eraser was selected, change drawing color to default
+        if self.color_fg == self.canvas['bg']:
+            self.color_fg = 'white'
+
         self.canvas['bg'] = color_code[1]
 
     # def change_canvas(self):

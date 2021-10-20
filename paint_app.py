@@ -46,7 +46,7 @@ class main:
         # making the canvas and making it recognise movements of the mouse
         # Place the canvas as filling the entire screen
         #  + str(self.color_fg)
-        self.canvas = Canvas(self.root, cursor="dot", bg='#282828', relief="flat", height=self.screen_height, width=(self.screen_width - (self.screen_width * .05)))
+        self.canvas = Canvas(self.root, cursor="dot", bg='#282828', relief="flat", height=self.screen_height, width=(self.screen_width - (self.screen_width * .2)))
         self.canvas.place(x=135, y=0)
 
         self.old_x = None

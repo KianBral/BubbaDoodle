@@ -4,6 +4,7 @@ from tkinter import messagebox, colorchooser
 from tkinter.filedialog import asksaveasfilename,askopenfilename
 import pyscreenshot as ImageGrab
 from PIL import ImageTk,Image
+import math
 
 
 class Color_Button(Button):#Inherited custom made color button , with default command to change colour of pen
@@ -31,6 +32,8 @@ class main:
 
         self.screen_width = self.root.winfo_screenwidth()
         self.screen_height = self.root.winfo_screenheight()
+        self.button_width = math.floor(self.screen_width * .007)
+        self.button_height = math.floor(self.screen_height * .002)
         self.root.geometry(f"{self.screen_width-int(self.screen_width*0.3)}x{self.screen_height-int(self.screen_height*0.3)}")
 
 
@@ -43,8 +46,8 @@ class main:
         # making the canvas and making it recognise movements of the mouse
         # Place the canvas as filling the entire screen
         #  + str(self.color_fg)
-        self.canvas = Canvas(self.root, cursor="dot", bg='#282828', relief="flat", height=self.screen_height, width=self.screen_width)
-        self.canvas.place(x=0, y=0)
+        self.canvas = Canvas(self.root, cursor="dot", bg='#282828', relief="flat", height=self.screen_height, width=(self.screen_width - (self.screen_width * .05)))
+        self.canvas.place(x=135, y=0)
 
         self.old_x = None
         self.old_y = None
@@ -55,49 +58,44 @@ class main:
 
         # making colour buttons
         colors = ['#a7d9fe', '#7f7f7f', 'white', '#ff3e49']
-        i=1179;j=149
+        i=.90;j=.37
         for color in colors:
-            Color_Button(color).place(x=i,y=j)#Refer class Color_Button
-            j+=94
+            Color_Button(color).place(relx=i,rely=j)#Refer class Color_Button
+            j+=.12
         
         # Brush + brushsize 
         self.Brush_Text = Label(self.root, text='BRUSH', bd=0, bg='white', font=('calibri', 11))
-        self.Brush_Text.place(x=1179, y=525)
+        self.Brush_Text.place(relx=.90, rely=.87, relwidth=.05)
 
         self.options = StringVar(self.root)
         self.options.set('3')#Default option
         self.size_chooser = OptionMenu(self.root, self.options, *( str(x) for x in range(21)))
-        self.size_chooser.place(x=1179, y=545)
+        self.size_chooser.place(relx=.90, rely=.90, relwidth=.05)
+
 
         # Eraser 
-        self.eraser_button = Button(self.root, text='ERASE', font=('calibri', 10), bd=2, bg='white', command=self.erase,width=8, relief=RIDGE)
-        self.eraser_button.place(x=1179, y=585)
+        self.eraser_button = Button(self.root, text='ERASE', font=('calibri', 10), bd=2, bg='white', command=self.erase, width=self.button_width, height=self.button_height, relief=RIDGE)
+        self.eraser_button.place(relx=.90, rely=.94)
 
 
         # Buttons on top left, from top to bottom
-        self.Pallet_For_Foreground = Button(self.root, text='PALETTE', font=('calibri', 10), bd=2, bg='white', command=self.choose_color,width=8, relief=RIDGE)
-        self.Pallet_For_Foreground.place(x=5,y=5)
+        self.Pallet_For_Foreground = Button(self.root, text='PALETTE', font=('calibri', 10), bd=2, bg='white', command=self.choose_color, width=self.button_width, height=self.button_height, relief=RIDGE)
+        self.Pallet_For_Foreground.place(x=8,y=5)
 
-        self.clear_button = Button(self.root, text='CLEAR', bd=2, bg='white', command=self.clear, width=8, relief=RIDGE)
-        self.clear_button.place(x=5, y=35)
+        self.clear_button = Button(self.root, text='CLEAR', font=('calibri', 10), bd=2, bg='white', command=self.clear, width=self.button_width, height=self.button_height, relief=RIDGE)
+        self.clear_button.place(x=8, y=45)
 
-        self.save_button = Button(self.root, text='SAVE', bd=2, bg='white', command=self.save, width=8, relief=RIDGE)
-        self.save_button.place(x=5, y=65)
+        self.save_button = Button(self.root, text='SAVE', font=('calibri', 10), bd=2, bg='white', command=self.save, width=self.button_width, height=self.button_height, relief=RIDGE)
+        self.save_button.place(x=8, y=85)
 
-        # self.change_canvas_button=Button(self.root,text='CANVAS',font=('calibri', 10), bd=2,width=8, bg='white',command=self.change_canvas, relief=RIDGE)
-        # self.change_canvas_button.place(x=5, y=370)
+        self.undo_button = Button(self.root, text='UNDO', font=('calibri', 10), bd=2, width=self.button_width, height=self.button_height, bg='white',command=self.undo_exec, relief=RIDGE)
+        self.undo_button.place(x=8, y=125)
 
-        # self.graph_button =Button(self.root,text='GRAPH',font=('calibri', 10), bd=2,width=8, bg='white',command=self.graph, relief=RIDGE)
-        # self.graph_button.place(x=5, y=400)
+        self.open_button=Button(self.root,text="OPEN" ,font=('calibri', 10), bd=2, width=self.button_width, height=self.button_height, bg='white',command=self.open, relief=RIDGE)
+        self.open_button.place(x=8, y=165)
 
-        self.undo_button = Button(self.root, text='UNDO', font=('calibri', 10), bd=2,width=8, bg='white',command=self.undo_exec, relief=RIDGE)
-        self.undo_button.place(x=5, y=90)
-
-        self.open_button=Button(self.root,text="OPEN" ,font=('calibri', 10), bd=2,width=8, bg='white',command=self.open, relief=RIDGE)
-        self.open_button.place(x=5, y=120)
-
-        self.Background_Button = Button(self.root, text='BG COLOR', font=('calibri', 10),bd=2, bg='white', command=self.change_bg, width=8, relief=RIDGE)
-        self.Background_Button.place(x=5, y=150)
+        self.Background_Button = Button(self.root, text='BG COLOR', font=('calibri', 10),bd=2, bg='white', command=self.change_bg, width=self.button_width, height=self.button_height, relief=RIDGE)
+        self.Background_Button.place(x=8, y=205)
 
 
     # All functions are defined below

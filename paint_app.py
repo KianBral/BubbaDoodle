@@ -251,8 +251,8 @@ if __name__ == '__main__':
     splash_label = Label(splash_root, image=splash_img)
     splash_label.pack()
 
-    def canvas():
-        splash_root.destroy()
+    def canvas(destroyRoot):
+        destroyRoot.destroy()
 
         root = Tk()
         root.title('BubbaDoodle!')
@@ -260,6 +260,17 @@ if __name__ == '__main__':
         program=main(root)
 
         root.mainloop()
+    
+    def homeScreen():
+        #Home Screen
+        splash_root.destroy()
 
-    splash_label.after(2000, canvas)
+        home_root = Tk()
+        home_root.title('Bubba Doodle!')
+        home_root.geometry(f"{screen_width-int(screen_width*0.3)}x{screen_height-int(screen_height*0.3)}")
+
+        blank = Button(home_root, text='Open Blank Canvas', command=lambda:[canvas(home_root)])
+        blank.place(x=100, y=100)
+
+    splash_label.after(2000, homeScreen)
     splash_root.mainloop()

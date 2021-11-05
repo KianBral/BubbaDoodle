@@ -335,8 +335,11 @@ if __name__ == '__main__':
         # blank.place(x=100, y=400)
         # blank.pack()
         
-        template1 = Button(home_root, text='Open Template', command=lambda:[canvas(home_root, "bubbdoob_splash.jpg")])
+        template1 = Button(home_root, text='Open Star', command=lambda:[canvas(home_root, "connect_dots_star_invert.jpg")])
         template1.place(x=100, y=100)
+
+        template2 = Button(home_root, text='Open Cloud', command=lambda:[canvas(home_root, "connect_dots_cloud_invert.jpg")])
+        template2.place(x=100, y=200)
 
         openButton = Button(home_root, text='Open Picture', command=lambda:[openFileFunction(home_root)])
         openButton.place(x=100, y=300)

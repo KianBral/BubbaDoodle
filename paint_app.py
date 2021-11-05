@@ -57,8 +57,13 @@ class main:
         self.canvas.bind('<B1-Motion>', self.paint)  # drawing  line
         self.canvas.bind('<ButtonRelease>', self.reset)
         
-        self.img = ImageTk.PhotoImage(Image.open(fileOpen))
-        self.canvas.create_image(0,0, anchor=NW, image=self.img)
+        if fileOpen != "":
+            try:
+                self.img = ImageTk.PhotoImage(Image.open(fileOpen))
+                self.canvas.create_image(0,0, anchor=NW, image=self.img)
+            except:
+                # TODO: add error message?
+                pass
 
         # making colour buttons
         colors = ['#a7d9fe', '#7f7f7f', 'white', '#ff3e49']
@@ -282,6 +287,13 @@ if __name__ == '__main__':
         program=main(root, fileName)
 
         root.mainloop()
+
+    def openFileFunction(destroyRoot):
+        file_chosen=askopenfilename(initialdir="/Desktop", title="Select file", filetypes=(
+            ('JPEG', '*.jpg'), ('PNG', '*.png'), ('PS', '*.ps'),
+            ('BMP', '*.bmp'),
+            ('GIF', '*.gif')),defaultextension=".jpg")
+        canvas(destroyRoot, file_chosen)
     
     def homeScreen():
         #Home Screen
@@ -291,11 +303,19 @@ if __name__ == '__main__':
         home_root.title('Bubba Doodle!')
         home_root.geometry(f"{screen_width-int(screen_width*0.3)}x{screen_height-int(screen_height*0.3)}")
 
-        blank = Button(home_root, text='Open Blank Canvas', command=lambda:[canvas(home_root, "bubbdoob_splash.jpg")])
-        blank.place(x=100, y=100)
+        canvas = Canvas(home_root, cursor="dot", bg='black', relief="flat", height=screen_width, width=screen_width)
+        canvas.place(x=0, y=0)
 
+        blank = Button(home_root, text='Open Blank Canvas', command=lambda:[canvas(home_root, "")])
+        blank.place(x=100, y=400)
+
+        canvas.create_image(100, 100, image='bubbdoob_splash.jpg', anchor=NW)
+        
         template1 = Button(home_root, text='Open Template', command=lambda:[canvas(home_root, "bubbdoob_splash.jpg")])
-        template1.place(x=100, y=200)
+        template1.place(x=100, y=800)
+
+        openButton = Button(home_root, text='Open Picture', command=lambda:[openFileFunction(home_root)])
+        openButton.place(x=100, y=1200)
 
     splash_label.after(2000, homeScreen)
     splash_root.mainloop()

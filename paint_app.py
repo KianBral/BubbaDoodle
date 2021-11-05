@@ -25,10 +25,11 @@ class Color_Button(Button):#Inherited custom made color button , with default co
         # main.canvas.config(cursor="dot "+self.color)
 
 class main:
-    def __init__(self, master):
+    def __init__(self, master, fileOpen):
         self.root = master
         self.root.title("BubbaDoodle!")
         self.root.state('zoomed')
+        self.leah_mode = True
 
         self.screen_width = self.root.winfo_screenwidth()
         self.screen_height = self.root.winfo_screenheight()
@@ -54,13 +55,17 @@ class main:
         self.penwidth = 3
         self.tag = 0
         self.canvas.bind('<B1-Motion>', self.paint)  # drawing  line
-        self.canvas.bind('<ButtonRelease-1>', self.reset)
+        self.canvas.bind('<ButtonRelease>', self.reset)
+        
+        self.img = ImageTk.PhotoImage(Image.open(fileOpen))
+        self.canvas.create_image(0,0, anchor=NW, image=self.img)
 
         # making colour buttons
         colors = ['#a7d9fe', '#7f7f7f', 'white', '#ff3e49']
         i=.90;j=.37
         for color in colors:
             Color_Button(color).place(relx=i,rely=j)#Refer class Color_Button
+            # Color_Button(color).bind(self.reset)
             j+=.12
         
         # Brush + brushsize 
@@ -97,6 +102,9 @@ class main:
         self.Background_Button = Button(self.root, text='BG COLOR', font=('calibri', 10),bd=2, bg='white', command=self.change_bg, width=self.button_width, height=self.button_height, relief=RIDGE)
         self.Background_Button.place(x=8, y=205)
 
+        self.Toggle_Button = Button(self.root, text='DRAWER', font=('calibri', 10),bd=2, bg='white', command=self.togglePaint, width=self.button_width, height=self.button_height, relief=RIDGE)
+        self.Toggle_Button.place(x=8, y=245)
+
 
     # All functions are defined below
     def paint(self, e):
@@ -129,6 +137,20 @@ class main:
     def clear(self):
         '''clears the canvas'''
         self.canvas.delete(ALL)
+    
+    def togglePaint(self):
+        if not self.leah_mode:
+            self.canvas.unbind('<Motion>')
+            self.canvas.unbind('<Leave>')
+            self.canvas.bind('<B1-Motion>', self.paint)
+            self.canvas.bind('<ButtonRelease-1>', self.reset)
+            self.leah_mode = True
+        else:
+            self.canvas.bind('<Motion>', self.paint)
+            self.canvas.bind('<Leave>', self.reset)
+            self.canvas.unbind('<B1-Motion>')
+            self.canvas.unbind('<ButtonRelease-1>')
+            self.leah_mode = False
 
     def erase(self):
         '''erasing stuff simply by changing colour of the brush to white'''
@@ -251,13 +273,13 @@ if __name__ == '__main__':
     splash_label = Label(splash_root, image=splash_img)
     splash_label.pack()
 
-    def canvas(destroyRoot):
+    def canvas(destroyRoot, fileName):
         destroyRoot.destroy()
 
         root = Tk()
         root.title('BubbaDoodle!')
         global program
-        program=main(root)
+        program=main(root, fileName)
 
         root.mainloop()
     
@@ -269,8 +291,11 @@ if __name__ == '__main__':
         home_root.title('Bubba Doodle!')
         home_root.geometry(f"{screen_width-int(screen_width*0.3)}x{screen_height-int(screen_height*0.3)}")
 
-        blank = Button(home_root, text='Open Blank Canvas', command=lambda:[canvas(home_root)])
+        blank = Button(home_root, text='Open Blank Canvas', command=lambda:[canvas(home_root, "bubbdoob_splash.jpg")])
         blank.place(x=100, y=100)
+
+        template1 = Button(home_root, text='Open Template', command=lambda:[canvas(home_root, "bubbdoob_splash.jpg")])
+        template1.place(x=100, y=200)
 
     splash_label.after(2000, homeScreen)
     splash_root.mainloop()

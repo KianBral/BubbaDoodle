@@ -1,0 +1,3 @@
+self.canvas.delete('my_tag0')
+self.canvas.delete('my_tag1')
+self.canvas.delete('my_tag2')

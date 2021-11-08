@@ -30,6 +30,7 @@ class main:
         self.root.title("BubbaDoodle!")
         self.root.state('zoomed')
         self.leah_mode = True
+        self.fileOpen = ""
 
         self.screen_width = self.root.winfo_screenwidth()
         self.screen_height = self.root.winfo_screenheight()
@@ -59,6 +60,7 @@ class main:
         
         if fileOpen != "":
             try:
+                self.fileOpen = fileOpen
                 self.img = ImageTk.PhotoImage(Image.open(fileOpen))
                 self.canvas.create_image(0,0, anchor=NW, image=self.img)
             except:
@@ -93,8 +95,8 @@ class main:
         self.Pallet_For_Foreground = Button(self.root, text='PALETTE', font=('calibri', 10), bd=2, bg='white', command=self.choose_color, width=self.button_width, height=self.button_height, relief=RIDGE)
         self.Pallet_For_Foreground.place(x=8,y=5)
 
-        self.clear_button = Button(self.root, text='CLEAR', font=('calibri', 10), bd=2, bg='white', command=self.clear, width=self.button_width, height=self.button_height, relief=RIDGE)
-        self.clear_button.place(x=8, y=45)
+        self.open_button=Button(self.root,text="OPEN" ,font=('calibri', 10), bd=2, width=self.button_width, height=self.button_height, bg='white',command=self.open, relief=RIDGE)
+        self.open_button.place(x=8, y=45)
 
         self.save_button = Button(self.root, text='SAVE', font=('calibri', 10), bd=2, bg='white', command=self.save, width=self.button_width, height=self.button_height, relief=RIDGE)
         self.save_button.place(x=8, y=85)
@@ -102,8 +104,8 @@ class main:
         self.undo_button = Button(self.root, text='UNDO', font=('calibri', 10), bd=2, width=self.button_width, height=self.button_height, bg='white',command=self.undo_exec, relief=RIDGE)
         self.undo_button.place(x=8, y=125)
 
-        self.open_button=Button(self.root,text="OPEN" ,font=('calibri', 10), bd=2, width=self.button_width, height=self.button_height, bg='white',command=self.open, relief=RIDGE)
-        self.open_button.place(x=8, y=165)
+        self.clear_button = Button(self.root, text='CLEAR', font=('calibri', 10), bd=2, bg='white', command=self.clear, width=self.button_width, height=self.button_height, relief=RIDGE)
+        self.clear_button.place(x=8, y=416)
 
         self.Background_Button = Button(self.root, text='BG COLOR', font=('calibri', 10),bd=2, bg='white', command=self.change_bg, width=self.button_width, height=self.button_height, relief=RIDGE)
         self.Background_Button.place(x=8, y=205)
@@ -140,9 +142,19 @@ class main:
         self.undo.write(f"self.canvas.delete('{'my_tag' + str(self.tag)}')\n")
         self.tag += 1
 
-    def clear(self):
+    def clear(self, background_clear = False):
         '''clears the canvas'''
-        self.canvas.delete(ALL)
+        if background_clear:
+            return
+
+        res = messagebox.askquestion('Clear canvas', 'Are you sure you want to clear the canvas?')
+        if res == 'yes':
+            self.canvas.delete(ALL)
+
+            if self.fileOpen != "":
+                self.img = ImageTk.PhotoImage(Image.open(self.fileOpen))
+                self.canvas.create_image(0,0, anchor=NW, image=self.img)
+
     
     def togglePaint(self):
         if not self.leah_mode:
@@ -217,10 +229,8 @@ class main:
                 print('Error Saving File')
 
     def open(self):
-        file_chosen=askopenfilename(initialdir="/Desktop", title="Select file", filetypes=(
-            ('JPEG', '*.jpg'), ('PNG', '*.png'), ('PS', '*.ps'),
-            ('BMP', '*.bmp'),
-            ('GIF', '*.gif')),defaultextension=".jpg")
+        file_chosen=askopenfilename(initialdir="./dist/Doodles", title="Select file", filetypes=(
+            ('JPEG', '*.jpg'), ('PNG', '*.png')),defaultextension=".jpg")
         try:
             self.img = ImageTk.PhotoImage(Image.open(file_chosen))
             self.canvas.create_image(0,0, anchor=NW, image=self.img)
@@ -236,7 +246,7 @@ class main:
     def change_bg(self):
         self.undo.write(f"self.canvas['bg']='{self.color_bg}'\n")
         color_code = colorchooser.askcolor(title="Choose Color")
-        self.clear()
+        self.clear(background_clear=True)
 
         # if the eraser was selected, change drawing color to default
         if self.color_fg == self.canvas['bg']:
@@ -280,7 +290,6 @@ if __name__ == '__main__':
     splash_label.pack()
 
     def canvas(destroyRoot, fileName):
-        print('hello')
         destroyRoot.destroy()
 
         root = Tk()
@@ -289,60 +298,61 @@ if __name__ == '__main__':
         program=main(root, fileName)
 
         root.mainloop()
-        
-    def openFileFunction(destroyRoot):
-        file_chosen=askopenfilename(initialdir="/Desktop", title="Select file", filetypes=(
-            ('JPEG', '*.jpg'), ('PNG', '*.png'), ('PS', '*.ps'),
-            ('BMP', '*.bmp'),
-            ('GIF', '*.gif')),defaultextension=".jpg")
+
+    types = [('JPEG', '*.jpg'), ('PNG', '*.png')]
+    
+    # types = '*.jpg *.png *.ps *.bmp *.gif'
+
+    def openFileFunction(destroyRoot, dir):
+        file_chosen=askopenfilename(initialdir=dir, title="Select file", filetypes=(types))
         canvas(destroyRoot, file_chosen)
-    
-    def printHi(): 
-        print("hi")
-    
+
     def homeScreen():
-        #Home Screen
+        # Home Screen
         splash_root.destroy()
 
         home_root = Tk()
+        home_root.eval('tk::PlaceWindow . center')
         home_root.title('Bubba Doodle!')
-        home_root.geometry(f"{screen_width-int(screen_width*0.3)}x{screen_height-int(screen_height*0.3)}")
+        # home_root.geometry(f"{screen_width-int(screen_width*0.3)}x{screen_height-int(screen_height*0.3)}")
+        home_root.geometry("700x100")
 
-        # homeCanvas = Canvas(home_root, cursor="dot", bg='white', relief="flat", height=screen_width, width=screen_width)
-        # homeCanvas.place(x=0, y=0)
-        # t1 = ImageTk.PhotoImage(Image.open("bubbdoob_splash.jpg").resize((200, 200)))
-        t1 = Image.open("bubbdoob_splash.jpg").resize((200, 200))
-        t1Photo = ImageTk.PhotoImage(t1)
-        # t1_label = Label(home_root, image=t1Photo)
+        # t1 = Image.open("dist/Capture.PNG").resize((200, 200))
+        # t1Photo = ImageTk.PhotoImage(t1)
+        # t1Label = Label(home_root, image = t1Photo)
+        # t1Label.place(x = 0, y = 0)
+        # # t1Photo = ImageTk.PhotoImage(file=t1)
+        # # t1Photo = PhotoImage(file=r"C:\\Users\\thebr\\Documents\\Paint\\dist\\Capture.PNG")
+        # # t1Photo = t1Photo.subsample(5,5)
 
         def emptyCanvas():
             canvas(home_root, "")
 
-    
-        t1_button = Button(home_root, image=t1Photo, command=emptyCanvas)
-        t1_button.pack()
-        # t1_label.pack()
-        # t1_label.bind('<Button-1>', lambda:[canvas(home_root, "")])
+        t1_button = Button(home_root, text="Blank Canvas", command=emptyCanvas)
+        t1_button.place(x=100, y=25)
+        # t1_button.pack()
 
-        test = PhotoImage(file="bubbdoob_splash.jpg")
-        # t_label = Label(image=t1Photo)
-        # t_label.pack()
+        # test = PhotoImage(file="bubbdoob_splash.jpg")
 
-        # blank = Button(home_root, image=t1Photo, text='Open Blank Canvas', command=lambda:[canvas(home_root, "")])
-        # blank = Button(home_root, image=t1Photo, text='Open Blank Canvas')
-        # blank = Button(home_root)
-        # blank.config(image=t1Photo, width="100", height="100")
-        # blank.place(x=100, y=400)
-        # blank.pack()
+        debug = True
+        if (debug):
+            temp1 = "./dist/Templates/connect_dots_star_invert.jpg"
+            temp2 = "./dist/Templates/connect_dots_cloud_invert.jpg"
+            openB = "./dist/Doodles"
+        else:
+            temp1 = "./Templates/connect_dots_star_invert.jpg"
+            temp2 = "./Templates/connect_dots_cloud_invert.jpg"
+            openB = "./Doodles"
+
         
-        template1 = Button(home_root, text='Open Star', command=lambda:[canvas(home_root, "connect_dots_star_invert.jpg")])
-        template1.place(x=100, y=100)
+        template1 = Button(home_root, text='Open Star', command=lambda:[canvas(home_root, temp1)])
+        template1.place(x=200, y=25)
 
-        template2 = Button(home_root, text='Open Cloud', command=lambda:[canvas(home_root, "connect_dots_cloud_invert.jpg")])
-        template2.place(x=100, y=200)
+        template2 = Button(home_root, text='Open Cloud', command=lambda:[canvas(home_root, temp2)])
+        template2.place(x=300, y=25)
 
-        openButton = Button(home_root, text='Open Picture', command=lambda:[openFileFunction(home_root)])
-        openButton.place(x=100, y=300)
+        openButton = Button(home_root, text='Open Picture', command=lambda:[openFileFunction(home_root, openB)])
+        openButton.place(x=400, y=25)
 
     splash_label.after(2000, homeScreen)
     splash_root.mainloop()

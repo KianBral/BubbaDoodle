@@ -2,3 +2,4 @@ __pycache__/
 build/
 dist/undo.rec
 BubbaDoodle.spec
+venv/

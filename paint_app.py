@@ -253,8 +253,6 @@ class main:
                 print('Error Saving File')
 
     def open(self, fileName):
-        # file_chosen=askopenfilename(initialdir="./dist/Doodles", title="Select file", filetypes=(
-        #     ('JPEG', '*.jpg'), ('PNG', '*.png')),defaultextension=".jpg")
         try:
             self.img_src = Image.open(fileName)
             self.img = ImageTk.PhotoImage(self.img_src)
@@ -351,35 +349,48 @@ if __name__ == '__main__':
         splash_root.destroy()
 
         home_root = Tk()
-        home_root.eval('tk::PlaceWindow . center')
         home_root.title('Bubba Doodle!')
-        home_root.geometry("700x100")
+        home_root.geometry(f"{math.floor(screen_width * 0.6)}x{math.floor(screen_height * 0.65)}")
 
         def emptyCanvas():
             canvas(home_root, "")
 
-        t1_button = Button(home_root, text="Blank Canvas", command=emptyCanvas)
-        t1_button.place(x=100, y=25)
+        imageHeight = math.floor(screen_height * 0.2)
+        imageWidth = math.floor(screen_width * 0.2)
+        buttonYPadding = math.floor(screen_height * 0.05)
+        buttonXPadding = math.floor(screen_width * 0.05)
 
         debug = True
         if (debug):
-            temp1 = "./dist/Templates/connect_dots_star_invert.jpg"
-            temp2 = "./dist/Templates/connect_dots_cloud_invert.jpg"
-            openB = "./dist/Doodles"
+            splashImg = "bubbdoob_splash.png"
+            fileImg = "file.png"
+            starImg = "connect_dots_star_invert.png"
+            cloudImg = "connect_dots_cloud_invert.png"
+            whereToOpen = "./dist/Doodles"
         else:
-            temp1 = "./Templates/connect_dots_star_invert.jpg"
-            temp2 = "./Templates/connect_dots_cloud_invert.jpg"
-            openB = "./Doodles"
+            splashImg = "./Pictures/bubbdoob_splash.png"
+            fileImg = "./Pictures/file.png"
+            starImg = "./Templates/connect_dots_star_invert.png"
+            cloudImg = "./Templates/connect_dots_cloud_invert.png"
+            whereToOpen = "./Doodles"
 
+        blankCanvas = ImageTk.PhotoImage(Image.open(splashImg).resize((imageWidth, imageHeight)))
+        blankButton = Button(home_root, text="Blank Canvas", command=emptyCanvas, image=blankCanvas, compound=TOP)
+        blankButton.grid(row=0, column=0, pady=buttonYPadding, padx=buttonXPadding)
+
+        openCanvas = ImageTk.PhotoImage(Image.open(fileImg).resize((imageWidth, imageHeight)))
+        openButton = Button(home_root, text='Open Image from Folder', command=lambda:[openFileFunction(home_root, whereToOpen)], image=openCanvas, compound=TOP)
+        openButton.grid(row=0, column=1, pady=buttonYPadding, padx=buttonXPadding)
         
-        template1 = Button(home_root, text='Open Star', command=lambda:[canvas(home_root, temp1)])
-        template1.place(x=200, y=25)
+        starCanvas = ImageTk.PhotoImage(Image.open(starImg).resize((imageWidth, imageHeight)))
+        starTemplate = Button(home_root, text='Open Star', command=lambda:[canvas(home_root, starImg)], image=starCanvas, compound=TOP)
+        starTemplate.grid(row=1, column=0, pady=buttonYPadding, padx=buttonXPadding)
 
-        template2 = Button(home_root, text='Open Cloud', command=lambda:[canvas(home_root, temp2)])
-        template2.place(x=300, y=25)
+        cloudCanvas = ImageTk.PhotoImage(Image.open(cloudImg).resize((imageWidth, imageHeight)))
+        cloudTemplate = Button(home_root, text='Open Cloud', command=lambda:[canvas(home_root, cloudImg)], image=cloudCanvas, compound=TOP)
+        cloudTemplate.grid(row=1, column=1, pady=buttonYPadding, padx=buttonXPadding)
 
-        openButton = Button(home_root, text='Open Picture', command=lambda:[openFileFunction(home_root, openB)])
-        openButton.place(x=400, y=25)
+        home_root.mainloop()
 
     splash_label.after(2000, homeScreen)
     splash_root.mainloop()

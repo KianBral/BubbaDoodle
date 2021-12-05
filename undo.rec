@@ -1,4 +1,0 @@
-self.color_fg='white'
-self.options.set(3)
-self.canvas.delete('my_tag0')
-self.canvas.delete('my_tag1')

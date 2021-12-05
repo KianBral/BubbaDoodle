@@ -5,6 +5,9 @@ from tkinter.filedialog import asksaveasfilename,askopenfilename
 import pyscreenshot as ImageGrab
 from PIL import ImageTk,Image
 import math
+import time
+# from pygame import mixer
+import playsound
 
 
 class Color_Button(Button):#Inherited custom made color button , with default command to change colour of pen
@@ -40,6 +43,7 @@ class main:
 
 
         self.color_fg = 'white'  # Colour of pen
+        self.prev_color = 'white'
         self.color_bg = '#282828'  # Background colour
         self.root.configure(background='#282828')
 
@@ -48,7 +52,7 @@ class main:
         # making the canvas and making it recognise movements of the mouse
         # Place the canvas as filling the entire screen
         #  + str(self.color_fg)
-        self.canvas = Canvas(self.root, cursor="dot", bg='#282828', relief="flat", height=self.screen_height, width=(self.screen_width - (self.screen_width * .2)))
+        self.canvas = Canvas(self.root, cursor="dot", bg='#282828', relief="flat", height=self.screen_height, width=(self.screen_width * .8))
         self.canvas.place(x=135, y=0)
 
         self.old_x = None
@@ -57,23 +61,24 @@ class main:
         self.tag = 0
         self.canvas.bind('<B1-Motion>', self.paint)  # drawing  line
         self.canvas.bind('<ButtonRelease>', self.reset)
+        self.erasing = False
         
         if fileOpen != "":
-            try:
-                self.fileOpen = fileOpen
-                self.img = ImageTk.PhotoImage(Image.open(fileOpen))
-                self.canvas.create_image(0,0, anchor=NW, image=self.img)
-            except:
-                # TODO: add error message?
-                messagebox.showwarning("Invalid file. Accepted types are JPEG, PNG, PS, BMP, and GIF")
-                pass
+            self.open(fileName=fileOpen)
+            # try:
+            #     self.fileOpen = fileOpen
+            #     self.img = ImageTk.PhotoImage(Image.open(fileOpen))
+            #     self.canvas.create_image(0,0, anchor=NW, image=self.img)
+            # except:
+            #     # TODO: add error message?
+            #     messagebox.showwarning("Invalid file. Accepted types are JPEG, PNG, PS, BMP, and GIF")
+            #     pass
 
         # making colour buttons
         colors = ['#a7d9fe', '#7f7f7f', 'white', '#ff3e49']
         i=.90;j=.37
         for color in colors:
             Color_Button(color).place(relx=i,rely=j)#Refer class Color_Button
-            # Color_Button(color).bind(self.reset)
             j+=.12
         
         # Brush + brushsize 
@@ -126,6 +131,7 @@ class main:
                                     capstyle=ROUND,
                                     smooth=True,
                                     tag='my_tag' + str(self.tag))
+
         self.old_x = e.x
         self.old_y = e.y
 
@@ -145,15 +151,23 @@ class main:
     def clear(self, background_clear = False):
         '''clears the canvas'''
         if background_clear:
-            return
-
-        res = messagebox.askquestion('Clear canvas', 'Are you sure you want to clear the canvas?')
+            res = messagebox.askquestion('Background Color', 'Changing the background color will clear the canvas, are you sure you want to do that?')
+        else:
+            res = messagebox.askquestion('Clear Canvas', 'Are you sure you want to clear the canvas?')
+            
         if res == 'yes':
             self.canvas.delete(ALL)
 
             if self.fileOpen != "":
                 self.img = ImageTk.PhotoImage(Image.open(self.fileOpen))
                 self.canvas.create_image(0,0, anchor=NW, image=self.img)
+
+            # TODO: make canvas clear before sound plays
+            playsound.playsound("./Explosion.mp3")
+
+            return True
+        
+        return False
 
     
     def togglePaint(self):
@@ -172,10 +186,20 @@ class main:
 
     def erase(self):
         '''erasing stuff simply by changing colour of the brush to white'''
+        # When user is currently erasing
+        if self.erasing:
+            self.color_fg = self.prev_color
+            self.canvas.config(cursor="dot")
+            self.erasing = False
+            return
+
+        self.canvas.config(cursor="dotbox")
+        self.prev_color = self.color_fg
+        self.erasing = True
         self.undo.write(f"self.color_fg='{self.color_fg}'\n")
         self.undo.write(f"self.options.set({self.options.get()})\n")
         self.color_fg = self.canvas['bg']
-        # self.options.set('20')
+
 
     def undo_exec(self):
         self.undo.close()
@@ -228,39 +252,55 @@ class main:
             except:
                 print('Error Saving File')
 
-    def open(self):
-        file_chosen=askopenfilename(initialdir="./dist/Doodles", title="Select file", filetypes=(
-            ('JPEG', '*.jpg'), ('PNG', '*.png')),defaultextension=".jpg")
+    def open(self, fileName):
+        # file_chosen=askopenfilename(initialdir="./dist/Doodles", title="Select file", filetypes=(
+        #     ('JPEG', '*.jpg'), ('PNG', '*.png')),defaultextension=".jpg")
         try:
-            self.img = ImageTk.PhotoImage(Image.open(file_chosen))
-            self.canvas.create_image(0,0, anchor=NW, image=self.img)
-        except:
+            self.img_src = Image.open(fileName)
+            self.img = ImageTk.PhotoImage(self.img_src)
+            img_height = self.img.height()
+            img_width = self.img.width()
+            
+            height_scale = 1
+            width_scale = 1
+            if img_height > self.screen_height:
+                height_scale = img_height // self.screen_height
+            if img_width > self.screen_width * 0.8:
+                width_scale = img_width // (self.screen_width * 0.8)
+
+            if height_scale > width_scale:
+                img_height //= height_scale
+                img_width //= height_scale
+
+            else:
+                img_height //= width_scale
+                img_width //= width_scale
+            
+            self.img_src = self.img_src.resize((int(img_width), int(img_height)))
+            self.img_final = ImageTk.PhotoImage(self.img_src)
+
+            self.canvas.create_image(0,0,anchor=NW, image=self.img_final)
+        except Exception as e:
             return()
 
     def choose_color(self):
         # variable to store hexadecimal code of color
         self.undo.write(f"self.color_fg='{self.color_fg}'\n")
         color_code = colorchooser.askcolor(title="Choose color")
-        self.color_fg=color_code[1]#colour_code[1] is hex value of chose color. color_code[0] is rgb value of chosen color
+        if color_code != (None, None):
+            self.color_fg=color_code[1]#colour_code[1] is hex value of chose color. color_code[0] is rgb value of chosen color
 
     def change_bg(self):
         self.undo.write(f"self.canvas['bg']='{self.color_bg}'\n")
         color_code = colorchooser.askcolor(title="Choose Color")
-        self.clear(background_clear=True)
+        res = self.clear(background_clear=True)
 
-        # if the eraser was selected, change drawing color to default
-        if self.color_fg == self.canvas['bg']:
-            self.color_fg = 'white'
+        if res:
+            # if the eraser was selected, change drawing color to default
+            if self.color_fg == self.canvas['bg']:
+                self.color_fg = 'white'
 
-        self.canvas['bg'] = color_code[1]
-
-    # def change_canvas(self):
-    #     if self.root.winfo_width() != 1366:
-    #         self.canvas['width'] = root.winfo_screenwidth()-int(root.winfo_screenwidth()*0.37)
-    #         self.canvas['height']=root.winfo_screenheight()-int(root.winfo_screenheight()*0.33)
-    #     else:
-    #         self.canvas['height']=self.root.winfo_height()-20
-    #         self.canvas['width']=self.root.winfo_width()-100
+            self.canvas['bg'] = color_code[1]
 
     def graph(self):
         try:
@@ -293,6 +333,7 @@ if __name__ == '__main__':
         destroyRoot.destroy()
 
         root = Tk()
+        root.resizable(width=False, height=False)
         root.title('BubbaDoodle!')
         global program
         program=main(root, fileName)
@@ -300,8 +341,6 @@ if __name__ == '__main__':
         root.mainloop()
 
     types = [('JPEG', '*.jpg'), ('PNG', '*.png')]
-    
-    # types = '*.jpg *.png *.ps *.bmp *.gif'
 
     def openFileFunction(destroyRoot, dir):
         file_chosen=askopenfilename(initialdir=dir, title="Select file", filetypes=(types))
@@ -314,25 +353,13 @@ if __name__ == '__main__':
         home_root = Tk()
         home_root.eval('tk::PlaceWindow . center')
         home_root.title('Bubba Doodle!')
-        # home_root.geometry(f"{screen_width-int(screen_width*0.3)}x{screen_height-int(screen_height*0.3)}")
         home_root.geometry("700x100")
-
-        # t1 = Image.open("dist/Capture.PNG").resize((200, 200))
-        # t1Photo = ImageTk.PhotoImage(t1)
-        # t1Label = Label(home_root, image = t1Photo)
-        # t1Label.place(x = 0, y = 0)
-        # # t1Photo = ImageTk.PhotoImage(file=t1)
-        # # t1Photo = PhotoImage(file=r"C:\\Users\\thebr\\Documents\\Paint\\dist\\Capture.PNG")
-        # # t1Photo = t1Photo.subsample(5,5)
 
         def emptyCanvas():
             canvas(home_root, "")
 
         t1_button = Button(home_root, text="Blank Canvas", command=emptyCanvas)
         t1_button.place(x=100, y=25)
-        # t1_button.pack()
-
-        # test = PhotoImage(file="bubbdoob_splash.jpg")
 
         debug = True
         if (debug):

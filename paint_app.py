@@ -100,14 +100,11 @@ class main:
         self.Pallet_For_Foreground = Button(self.root, text='PALETTE', font=('calibri', 10), bd=2, bg='white', command=self.choose_color, width=self.button_width, height=self.button_height, relief=RIDGE)
         self.Pallet_For_Foreground.place(x=8,y=5)
 
-        self.open_button=Button(self.root,text="OPEN" ,font=('calibri', 10), bd=2, width=self.button_width, height=self.button_height, bg='white',command=self.open, relief=RIDGE)
-        self.open_button.place(x=8, y=45)
-
         self.save_button = Button(self.root, text='SAVE', font=('calibri', 10), bd=2, bg='white', command=self.save, width=self.button_width, height=self.button_height, relief=RIDGE)
-        self.save_button.place(x=8, y=85)
+        self.save_button.place(x=8, y=45)
 
         self.undo_button = Button(self.root, text='UNDO', font=('calibri', 10), bd=2, width=self.button_width, height=self.button_height, bg='white',command=self.undo_exec, relief=RIDGE)
-        self.undo_button.place(x=8, y=125)
+        self.undo_button.place(x=8, y=85)
 
         self.clear_button = Button(self.root, text='CLEAR', font=('calibri', 10), bd=2, bg='white', command=self.clear, width=self.button_width, height=self.button_height, relief=RIDGE)
         self.clear_button.place(x=8, y=416)
@@ -115,7 +112,10 @@ class main:
         self.Background_Button = Button(self.root, text='BG COLOR', font=('calibri', 10),bd=2, bg='white', command=self.change_bg, width=self.button_width, height=self.button_height, relief=RIDGE)
         self.Background_Button.place(x=8, y=205)
 
-        self.Toggle_Button = Button(self.root, text='DRAWER', font=('calibri', 10),bd=2, bg='white', command=self.togglePaint, width=self.button_width, height=self.button_height, relief=RIDGE)
+        self.drawer_label = Label(text="Current Drawer: Leah", width=(self.button_width * 2), height=(self.button_height * 2), wraplength=(self.button_width * 10))
+        self.drawer_label.place(relx=.9, rely=.1)
+
+        self.Toggle_Button = Button(self.root, text="SWITCH", font=('calibri', 10),bd=2, bg='white', command=self.togglePaint, width=self.button_width, height=self.button_height, relief=RIDGE)
         self.Toggle_Button.place(x=8, y=245)
 
 
@@ -169,20 +169,67 @@ class main:
         
         return False
 
+    # def create_image():                     # regular function, not method
+    #     start_x = randint(1, canvas_width//2)
+    #     start_y = randint(1, canvas_height//2)
+    #     canvas.create_image(start_x, start_y, anchor=NW, image=img)
     
     def togglePaint(self):
         if not self.leah_mode:
+            self.drawer_label.configure(text="Current Drawer: Leah")
             self.canvas.unbind('<Motion>')
             self.canvas.unbind('<Leave>')
             self.canvas.bind('<B1-Motion>', self.paint)
             self.canvas.bind('<ButtonRelease-1>', self.reset)
             self.leah_mode = True
         else:
-            self.canvas.bind('<Motion>', self.paint)
-            self.canvas.bind('<Leave>', self.reset)
-            self.canvas.unbind('<B1-Motion>')
-            self.canvas.unbind('<ButtonRelease-1>')
-            self.leah_mode = False
+            self.drawer_label.configure(text="Current Drawer: Bubba")
+
+            debug = True
+            if debug:
+                img_oneSec = "./dist/Pictures/1.png"
+                img_twoSec = "./dist/Pictures/2.png"
+                img_threeSec = "./dist/Pictures/3.png"
+            else:
+                img_oneSec = "./Pictures/1.png"
+                img_twoSec = "./Pictures/2.png"
+                img_threeSec = "./Pictures/3.png"
+
+            imageWidth = int(self.screen_width / 3)
+            imageHeight = int(self.screen_height / 1.5)
+
+            def changeThird():
+                self.thirdImage = ImageTk.PhotoImage(Image.open(img_threeSec).resize((imageWidth, imageHeight)))
+                self.change_label = Label(image=self.thirdImage, anchor=CENTER)
+                self.change_label.configure(image=self.thirdImage)
+                self.change_label.pack(pady=int(self.screen_height * 0.1))
+
+            def changeSecond():
+                self.secondImage = ImageTk.PhotoImage(Image.open(img_twoSec).resize((imageWidth, imageHeight)))
+                self.change_label.configure(image=self.secondImage)
+                
+            def changeFirst():
+                self.firstImage = ImageTk.PhotoImage(Image.open(img_oneSec).resize((imageWidth, imageHeight)))
+                self.change_label.configure(image=self.firstImage)
+            
+            def destroyLabel():
+                self.change_label.destroy()
+
+                self.canvas.bind('<Motion>', self.paint)
+                self.canvas.bind('<Leave>', self.reset)
+                self.canvas.unbind('<B1-Motion>')
+                self.canvas.unbind('<ButtonRelease-1>')
+                self.leah_mode = False
+            
+            self.root.after(0, changeThird)
+            self.root.after(1000, changeSecond)
+            self.root.after(2500, changeFirst)
+            self.root.after(3500, destroyLabel)
+
+            # time.sleep(1)
+            # time.sleep(1)
+
+        # self.Toggle_Button.pack()
 
     def erase(self):
         '''erasing stuff simply by changing colour of the brush to white'''
@@ -261,10 +308,11 @@ class main:
             
             height_scale = 1
             width_scale = 1
+
             if img_height > self.screen_height:
-                height_scale = img_height // self.screen_height
+                height_scale = img_height / self.screen_height
             if img_width > self.screen_width * 0.8:
-                width_scale = img_width // (self.screen_width * 0.8)
+                width_scale = img_width / (self.screen_width * 0.8)
 
             if height_scale > width_scale:
                 img_height //= height_scale

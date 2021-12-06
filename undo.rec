@@ -1,7 +1,1 @@
 self.canvas.delete('my_tag0')
-self.canvas.delete('my_tag1')
-self.canvas.delete('my_tag2')
-self.canvas.delete('my_tag3')
-self.canvas.delete('my_tag4')
-self.canvas.delete('my_tag5')
-self.canvas.delete('my_tag6')

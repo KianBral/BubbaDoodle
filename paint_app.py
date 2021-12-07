@@ -185,7 +185,7 @@ class main:
         else:
             self.drawer_label.configure(text="Current Drawer: Bubba")
 
-            debug = True
+            debug = False
             if debug:
                 img_oneSec = "./dist/Pictures/1.png"
                 img_twoSec = "./dist/Pictures/2.png"

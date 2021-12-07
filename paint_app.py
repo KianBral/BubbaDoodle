@@ -408,7 +408,7 @@ if __name__ == '__main__':
         buttonYPadding = math.floor(screen_height * 0.05)
         buttonXPadding = math.floor(screen_width * 0.05)
 
-        debug = True
+        debug = False
         if (debug):
             splashImg = "bubbdoob_splash.png"
             fileImg = "file.png"
@@ -418,8 +418,8 @@ if __name__ == '__main__':
         else:
             splashImg = "./Pictures/bubbdoob_splash.png"
             fileImg = "./Pictures/file.png"
-            starImg = "./Templates/connect_dots_star_invert.png"
-            cloudImg = "./Templates/connect_dots_cloud_invert.png"
+            starImg = "./Templates/connect_dots_star_invert.jpg"
+            cloudImg = "./Templates/connect_dots_cloud_invert.jpg"
             whereToOpen = "./Doodles"
 
         blankCanvas = ImageTk.PhotoImage(Image.open(splashImg).resize((imageWidth, imageHeight)))
